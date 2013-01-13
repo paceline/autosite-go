@@ -19,21 +19,21 @@ func init() {
 	// GET/POST '/manage'
 	http.HandleFunc("/manage", func(w http.ResponseWriter, r *http.Request) {
 		var site Site
-		switch r.Method {
-			default:
-				render(w, []string{"manage","error"}, nil)
-				return
+		switch extendMethod(r) {
 			case "GET":
 				site.Load(r)
-			case "POST":
+				render(w, []string{"manage","index"}, site)
+			case "PUT":
 				site.Save(r)
+				render(w, []string{"manage","index"}, site)
+			default:
+				render(w, []string{"manage","error"}, nil)
 		}
-		render(w, []string{"manage","index"}, site)
 	})
 	
 	// GET/POST/PUT/DELETE '/manage/pages'
 	http.HandleFunc("/manage/pages", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
+		switch extendMethod(r) {
 			default:
 				render(w, []string{"manage","error"}, nil)
 				return
@@ -63,7 +63,7 @@ func init() {
 	
 	// GET '/manage/pages/edit'
 	http.HandleFunc("/manage/pages/edit", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
+		switch extendMethod(r) {
 			default:
 				render(w, []string{"manage","error"}, nil)
 				return
@@ -80,4 +80,12 @@ func render(w http.ResponseWriter, url []string, pageData interface{})  {
       log.Fatalf("Template parsing error: %s", err)
     }
     pageTemplate.Execute(w, pageData)
+}
+
+// Helper: Use _method form field to support PUT and DELETE requests just like the regular GET and POST (-> RESTful routes)
+func extendMethod(r *http.Request) string {
+	if r.Method == "POST" && (strings.ToUpper(r.FormValue("_method")) == "PUT" || strings.ToUpper(r.FormValue("_method")) == "DELETE")  {
+		return strings.ToUpper(r.FormValue("_method"))
+	}
+	return r.Method
 }

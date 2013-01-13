@@ -1,6 +1,7 @@
 {{define "head"}}<title>Autosite admin area - Site</title>{{end}}
 {{define "body"}}<h1>Your Site</h1>
 <form accept-charset="UTF-8" action="/manage" method="post">
+  <input name="_method" type="hidden" value="put" />
   <fieldset class="inputs"><ol>
     <li>
       <label for="site_site_title">Site title<abbr title="required">*</abbr></label>
