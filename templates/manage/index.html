@@ -1,0 +1,44 @@
+{{define "head"}}<title>Autosite admin area - Site</title>{{end}}
+{{define "body"}}<h1>Your Site</h1>
+<form accept-charset="UTF-8" action="/manage" method="post">
+  <fieldset class="inputs"><ol>
+    <li>
+      <label for="site_site_title">Site title<abbr title="required">*</abbr></label>
+      <input id="site_site_title" maxlength="255" name="site[SiteTitle]" type="text" value="{{.SiteTitle}}" />
+      <p class="inline-hints">Pick a name for your website</p>
+    </li>
+    <li>
+      <label for="site_homepage_title">Homepage title</label>
+      <input id="site_homepage_title" maxlength="255" name="site[HomepageTitle]" type="text" value="{{.HomepageTitle}}" />
+      <p class="inline-hints">Pick a name for your homepage</p>
+    </li>
+    <li>
+      <label for="site_footer">Footer</label>
+      <textarea cols="75" id="site_footer" name="site[Footer]" rows="5">{{.Footer}}</textarea>
+      <p class="inline-hints">Something along the lines of Copyright 2010 me</p>
+    </li>
+    <li>
+      <label for="site_web_root">Web root<abbr title="required">*</abbr></label>
+      <input id="site_web_root" maxlength="255" name="site[WebRoot]" type="text" value="{{.WebRoot}}" />
+      <p class="inline-hints">URL that points to your start page (e.g. http://yourname.com)</p>
+    </li>
+    <li>
+      <label for="site_bitly_username">Bitly username<abbr title="required">*</abbr></label>
+      <input id="site_bitly_username" maxlength="255" name="site[BitlyUserName]" type="text" value="{{.BitlyUserName}}" />
+      <p class="inline-hints">Username for url shortening service Bitly</p>
+    </li>
+    <li>
+      <label for="site_bitly_accesskey">Bitly accesskey<abbr title="required">*</abbr></label>
+      <input id="site_bitly_accesskey" maxlength="255" name="site[BitlyAccessKey]" type="text" value="{{.BitlyAccessKey}}" />
+      <p class="inline-hints">Access key for url shortening service Bitly</p>
+    </li>
+    <li>
+      <label for="site_tracker_code">Tracker code</label>
+      <textarea cols="75" id="site_tracker_code" name="site[TrackerCode]" rows="10">{{.TrackerCode}}</textarea>
+      <p class="inline-hints">If you'd like to use Google Analytics and the like</p>
+    </li>
+  </ol></fieldset>
+  <fieldset class="buttons"><ol>
+    <li class="commit"><input class="update" id="site_submit" name="commit" type="submit" value="Save changes" /></li>
+  </ol></fieldset>
+</form>{{end}}

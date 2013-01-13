@@ -1,0 +1,15 @@
+application: autosite-go
+version: 1
+runtime: go
+api_version: go1
+
+handlers:
+- url: /static
+  static_dir: static
+
+- url: /manage.*
+  script: _go_app
+  login: admin
+
+- url: /.*
+  script: _go_app

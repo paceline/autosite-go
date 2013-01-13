@@ -1,0 +1,7 @@
+Package autosite provides a simple infrastructure for running a
+personal website (off of the Google App Engine)
+
+At this point it doesn't provide any real functionality but and just
+for playing around with Go
+    
+Created by Ulf Möhring <hello@ulfmoehring.net>
