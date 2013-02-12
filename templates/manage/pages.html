@@ -1,0 +1,16 @@
+{{define "head"}}<link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css" media="all" rel="stylesheet" type="text/css" />
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+<script src="/static/javascripts/pages.js"></script>
+<title>Autosite admin area - Pages</title>{{end}}
+{{define "body"}}<a class="selected" href="/manage/pages">My pages</a>
+	<a href="/manage/pages/new">New page</a>
+	<div class="spacer">&nbsp;</div>
+</div>
+<ul id="sortable">
+	{{range $.content}}
+		<li id="{{.Name}}">
+			<span class="ui-icon ui-icon-arrowthick-2-n-s"></span><a href="/manage/pages/{{.Name}}/edit">{{.Title}}</a>
+			(<a data-method="delete" data-remote="true" href="/manage/pages/{{.Name}}">delete</a>)
+		</li>
+	{{end}}
+</ul>{{end}}

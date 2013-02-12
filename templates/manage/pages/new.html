@@ -1,0 +1,42 @@
+{{define "head"}}<title>Autosite admin area - Pages</title>{{end}}
+{{define "body"}}<a href="/manage/pages">My pages</a>
+  <a href="/manage/pages/new">New page</a>
+  <div class="spacer">&nbsp;</div>
+</div>
+<form accept-charset="UTF-8" action="/manage/pages" method="post">
+	<table>
+		<tr>
+			<th>Title</th>
+			<td>
+				<input id="page_title" maxlength="255" name="Title" type="text" />
+				<p>Pick a page title</p>
+			</td>
+		</tr>
+		<tr>
+			<th>Body</th>
+			<td>
+				<textarea cols="75" id="page_body" name="Body" rows="5"></textarea>
+				<p>Plain HTML code, please</p>
+			</td>
+		</tr>
+		<tr>
+			<th>Slug</th>
+			<td>
+				<input id="page_name" maxlength="255" name="Name" type="text" />
+				<p>This page's name in your url e.g. (thispage in http://mysite.com/thispage)</p>
+			</td>
+		</tr>
+		<tr class="last_row">
+			<th>Publish</th>
+			<td>
+				<input id="page_published" name="Published" type="checkbox" value="1"> Mark as published
+			</td>
+		</tr>
+		<tr class="last_row">
+			<th></th>
+			<td>
+				<input id="page_submit" name="commit" type="submit" value="Save changes" />
+			</td>
+		</tr>
+	</table>
+</form>{{end}}

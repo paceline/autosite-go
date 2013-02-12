@@ -1,0 +1,34 @@
+{{define "head"}}<title>Autosite admin area - Networks</title>{{end}}
+{{define "body"}}<a class="selected" href="/manage/networks">Twitter</a>
+  <a href="/manage/networks/facebook">Facebook</a>
+  <a href="/manage/networks/linkedin">Linkedin</a>
+  <a href="/manage/networks/github">Github</a>
+  <div class="spacer">&nbsp;</div>
+</div>
+{{with $.content}}<form accept-charset="UTF-8" action="/manage/networks/{{.Name}}" method="post">
+	{{with $.key}}<input name="_method" type="hidden" value="put" />
+	<input name="Key" type="hidden" value="{{.}}" />{{end}}
+	<table>
+		<tr>
+			<th>Consumer Key</th>
+			<td>
+				<input id="consumer_key" maxlength="255" name="ConsumerKey" type="text" value="{{.ConsumerKey}}" />
+				<p>The API token for your application</p>
+			</td>
+		</tr>
+		<tr class="last_row">
+			<th>Consumer Secret</th>
+			<td>
+				<input id="consumer_secret" maxlength="255" name="ConsumerSecret" type="text" value="{{.ConsumerSecret}}" />
+				<p>The API secret for your application</p>
+			</td>
+		</tr>
+		<tr class="last_row">
+			<th></th>
+			<td>
+				<input class="update" id="account_submit" name="commit" type="submit" value="Save changes" /> &nbsp;&nbsp;
+        <a href="/auth/{{.Name}}">Verify</a>
+			</td>
+		</tr>
+	</table>
+</form>{{end}}{{end}}

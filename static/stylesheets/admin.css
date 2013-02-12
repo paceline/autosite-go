@@ -1,145 +1,80 @@
 body {
-  color: #222;
-  font-family: Helvetica Neue, Arial, sans-serif;
-  font-size: 101%;
-  margin: 0;
-  padding: 0;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: .85em;
+	margin: 0;
+	padding: 15px; 
 }
 
-a, a:visited { color: #0000FF; }
+h1 { font-size: 1.4em; }
 
-a.delete { color: #FF0000; padding-right: 10px; text-decoration: none; }
+a, a:active, a:visited { color: #0000ff }
 
-h2 { color: #666; margin: 0px 0px 20px 0px; padding: 0; }
+td, th {
+	border-bottom: 1px solid #ccc;
+	padding: 10px;
+	text-align: left;
+	vertical-align: top;
+}
+td { border-left: 1px solid #ccc }
+tr.last_row td, tr.last_row th { border-bottom: none; }
 
-
-#header {
-  background-color: #222;
-  border-bottom: 2px solid #444;
-  color: #FFF;
+#menu, #submenu, #footer { width: 100%; }
+#menu a, #menu .spacer {
+	background-color: #6688ee;
+	border-right: 1px solid #FFF;
+	color: #FFF;
+	font-weight: bold;
+	padding: 7px 15px 7px 15px;
+	float: left;
+	text-decoration: none;
+}
+#menu .spacer, #submenu .spacer { float: none; }
+#menu a:hover, #menu a.selected {
+	background-color: #465ea6;
 }
 
-#header h1 { margin: 0; padding: 10px; }
-
-#header a, #header a:visited, #header a:active { color: #FFF; }
-
-#header a:hover { text-decoration: none; }
-
-#header ul { float: right; margin: 10px 0 0 0; padding: 10px; }
-
-#header ul li { display: inline; padding-right: 10px; }
-
-#header ul li.log_in_out { padding-left: 20px; }
-
-
-
-#content { margin: 50px; }
-
-#content ol 
-
-#content ul { list-style-type: none; margin-top: 40px; }
-
-#content ul li { display: inline; padding-right: 10px; }
-
-#content #flash {
-  background-color: #00FFFF;
-  border: 2px solid #00B8BA;
-  margin-bottom: 40px;
-  padding: 10px;
+#submenu {
+	background-color: #e3e9ff;
+	border-bottom: 1px solid #bbccff;
+	margin-bottom: 25px;
+}
+#submenu h1, #submenu p {
+	margin: 0;
+	padding: 5px 10px 5px 10px;
+}
+#submenu a, #submenu .spacer {
+	margin-left: 10px;
+	margin-top: 15px;
+	padding: 5px 10px 5px 10px;
+}
+#submenu a {
+	float: left;
+	border-left: 1px solid #e3e9ff;
+	border-right: 1px solid #e3e9ff;
+	border-top: 1px solid #e3e9ff;
+}
+#submenu a.selected {
+	background-color: #fff;
+	border-left: 1px solid #bbccff;
+	border-right: 1px solid #bbccff;
+	border-top: 1px solid #bbccff;
 }
 
-#content #flash ul li, #content ul#list li { display: block; }
-
-#content ul#list {
-  margin: 5px 0 40px 0;
-  padding: 0;
+#notice { margin: -45px 0 20px 0; }
+#notice p {
+	background-color: #ffff3f;
+	margin: 0 auto;
+	padding: 5px;
+	max-width: 450px;
+	text-align: center;
 }
-
-#content ul#list li {
-  background-color: #EEE;
-  margin: 5px 0 5px 0;
-  padding: 10px;
-}
-
-#content ul#list li.drag { cursor: move; }
-
-#content .panel {
-  background-color: #EEE;
-  border: 1px solid #DDD;
-  float: left;
-  padding: 20px;
-  margin: 0 35px 35px 0;
-}
-
-#content .panel_options { float: right; }
-
-
-
-label {
-  color: #444;
-	display:block;
-	font-weight:bold;
-	font-size: 1.15em;
-	margin: 0 0 5px 0;
-}
-
-fieldset { border: none; padding: 0; margin: 0; }
-
-fieldset ol { list-style: none; font-size: 1.1em; }
-
-fieldset ol li { margin: 10px 0 25px 0; }
-
-.fields { margin: 0 0 35px 0; }
-
-.fieldWithErrors  {
-  border-left:6px solid #900;
-  padding-left: .1em;
-}
-
-.fieldWithErrors+label {
-  margin-top:0;
-}
-
-#errorExplanation {
-	border:2px solid #900;
-	width:100%;
-	margin:10px 0 30px 0;
-  background:#FCC;
-}
-
-#errorExplanation h2 {
-  text-align: left;
-  font-weight: bold;
-  padding: .25em .25em .25em .5em;
-  font-size: 12px;
-  background:#C66 no-repeat 10px 50%;
-  color: #fff;
-  border-bottom:2px solid #900;
-  margin-top:0;
-}
-
-#errorExplanation p {
-  margin: 0;
-  padding: .5em;
-  font-size: .75em;
-  font-weight:bold;
-}
-
-#errorExplanation ul {
-	font-size: .75em;
-	margin-left:30px;
-	padding:0 0 10px;
-}
-
-.inline-hints { color: #AAA; font-style: italic; font-size: 0.85em; }
 
 #footer {
-  float: left;
-  text-align: center;
-  width: 100%;
+	border-top: 3px solid #bbccff;
+	margin-top: 40px;
 }
+#footer p { text-align: center; }
 
-#footer p {
-  margin: 0;
-  padding: 0 0 20px 0;
-}
+#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 18px; }
+#sortable li span { position: absolute; margin-left: -1.3em; }
