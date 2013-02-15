@@ -1,2 +1,15 @@
-{{define "head"}}<title>Coming soon</title>{{end}}
-{{define "body"}}<p>Coming soon...</p>{{end}}
+{{define "body"}}<div id="feed">
+	{{range $index, $element := $.timeline}}<div id="update_{{$index}}">
+      {{with $element}}<h1>
+		  <a href="{{.UserUrl}}" class="user_link">{{.User}}</a>
+		  <a href="{{.Link}}">{{$element.Heading}}</a>
+      </h1>
+      {{with .Content}}<p>{{.}}</p>{{end}}
+      <p class="link">
+		  {{formatTime .Created}} from <a href="http://{{.Name}}.com">{{.NameTitle}}</a>
+      </p>
+    </div>{{end}}{{end}}
+</div>
+<div class="pagination">
+	{{pagination $.current}}
+</div>{{end}}

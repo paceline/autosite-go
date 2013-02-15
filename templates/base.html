@@ -1,9 +1,25 @@
-<!DOCTYPE html>
+{{define "website"}}<!DOCTYPE html>
 <html>
 	<head>
-		{{template "head" .}}
+		{{with $.site}}<title>{{.SiteTitle}}{{with $.page}} - {{.Title}}{{end}}</title>
+		<link href="/{{.Style}}" media="all" rel="stylesheet" type="text/css" />
+		{{htmlSafe .TrackerCodeString}}{{end}}
 	</head>
 	<body>
-		{{template "body" .}}
+		<div id="content">
+			<div id="header">
+				<ul>
+					<li><a href="/">Home</a></li>
+					{{range navigation}}<li><a href="/{{.Name}}">{{.Title}}</a></li>{{end}}
+				</ul>
+				{{if $.page}}
+				{{with $.page}}<img alt="{{.Name}}" src="/static/images/{{.Name}}.png" />{{end}}
+				{{else}}
+				{{with $.site}}<img alt="{{.HomepageTitle}}" src="/static/images/{{.HomepageTitle}}.png" />{{end}}
+				{{end}}
+			</div>
+			{{template "body" .}}
+		</div>
+		{{with $.site}}{{htmlSafe .Footer}}{{end}}
 	</body>
-</html>
+</html>{{end}}

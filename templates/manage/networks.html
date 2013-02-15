@@ -27,7 +27,7 @@
 			<th></th>
 			<td>
 				<input class="update" id="account_submit" name="commit" type="submit" value="Save changes" /> &nbsp;&nbsp;
-        <a href="/auth/{{.Name}}">Verify</a>
+        <a href="/auth/{{.Name}}">{{if .Secret}}Verified{{else}}Verify{{end}}</a>
 			</td>
 		</tr>
 	</table>

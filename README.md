@@ -5,9 +5,13 @@ Package autosite provides a simple infrastructure for running a
 personal website (off of the Google App Engine)
 
 ### TODOs
-* Front end functionality
-* Validations
-* More
+* Implement auto-delete for old status updates
+* Support more OAuth providers (planned are: Facebook, Github, LinkedIn, XING)
+* Add RSS/Atom feed
+* Think about re-post feature
+* Validations and proper error handling
+* Move all datastore code to ds_ext.go
+* More documentation
 
 ### Required libraries
 * Gorilla web toolkit (github.com/gorilla/mux, github.com/gorilla/schema, github.com/gorilla/sessions)
@@ -15,4 +19,4 @@ personal website (off of the Google App Engine)
 * goauth2 (code.google.com/p/goauth2/oauth)
 
 ### Credits
-Created by Ulf Möhring <hello@ulfmoehring.net>
+Created by Ulf Möhring <ulf@moehring.me>

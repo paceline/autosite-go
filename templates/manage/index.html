@@ -19,6 +19,15 @@
 			</td>
 		</tr>
 		<tr>
+			<th>Template</th>
+			<td>
+				<select name="TemplateKey">
+					{{range .Templates}}<option value="{{.Key}}" {{with .Selected}}{{.}}{{end}}>{{.Name}}</option>{{end}}
+				</select>
+				<p>Pick a CSS template</p>
+			</td>
+		</tr>
+		<tr>
 			<th>Footer</th>
 			<td>
 				<textarea cols="75" id="footer" name="Footer" rows="5">{{.Footer}}</textarea>

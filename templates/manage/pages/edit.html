@@ -6,6 +6,7 @@
 {{with $.content}}<form accept-charset="UTF-8" action="/manage/pages" method="post">
 	<input name="_method" type="hidden" value="put" />
 	{{with $.key}}<input name="Key" type="hidden" value="{{.}}" />{{end}}
+	<input name="Position" type="hidden" value="{{.Position}}" />
 	<table>
 		<tr>
 			<th>Title</th>
