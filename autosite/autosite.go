@@ -62,37 +62,33 @@ func init() {
 	
 	// GET '/manage/pages/new'
 	router.HandleFunc("/manage/pages/new", func(w http.ResponseWriter, r *http.Request) {
-		switch extendMethod(r) {
-			case "GET":
-				render(w, []string{"manage","pages","new"}, map[string]interface{}{})
+		if extendMethod(r) == "GET" {
+			render(w, []string{"manage","pages","new"}, map[string]interface{}{})
 		}
 	})
 	
 	// POST '/manage/pages/sort'
 	router.HandleFunc("/manage/pages/sort", func(w http.ResponseWriter, r *http.Request) {
-		switch extendMethod(r) {
-			case "POST":
-				r.ParseForm()
-				SortPages(strings.Split(r.Form.Get("order"),","))
+		if extendMethod(r) == "POST" {
+			r.ParseForm()
+			SortPages(strings.Split(r.Form.Get("order"),","))
 		}
 	})
 	
 	// DELETE '/manage/pages/{slug}'
 	router.HandleFunc("/manage/pages/{slug}", func(w http.ResponseWriter, r *http.Request) {
-		switch extendMethod(r) {
-			case "DELETE":
-				var page Page
-				key := GetByName(&page, vars["slug"])
-				Delete(key)
+		if extendMethod(r) == "DELETE" {
+			var page Page
+			key := GetByName(&page, vars["slug"])
+			Delete(key)
 		}
 	})
 	
 	// GET '/manage/pages/{slug}/edit'
 	router.HandleFunc("/manage/pages/{slug}/edit", func(w http.ResponseWriter, r *http.Request) {
-		switch extendMethod(r) {
-			case "GET":
-				var page Page
-				render(w, []string{"manage","pages","edit"}, map[string]interface{}{"key": GetByName(&page, vars["slug"]), "content": &page})
+		if extendMethod(r) == "GET" {
+			var page Page
+			render(w, []string{"manage","pages","edit"}, map[string]interface{}{"key": GetByName(&page, vars["slug"]), "content": &page})
 		}
 	})
 	
@@ -134,33 +130,30 @@ func init() {
 	
 	// GET '/auth/twitter'
 	router.HandleFunc("/auth/twitter", func(w http.ResponseWriter, r *http.Request) {
-		switch extendMethod(r) {
-			case "GET":
-				key, twitterAccount := prepareTwitterConnection(r)
-				creds := twitterAccount.ServeLogin(w, r)
-				Update(&twitterAccount, key)
-				http.Redirect(w, r, oauthClient.AuthorizationURL(creds, nil), 302)
+		if extendMethod(r) == "GET" {
+			key, twitterAccount := prepareTwitterConnection(r)
+			creds := twitterAccount.ServeLogin(w, r)
+			Update(&twitterAccount, key)
+			http.Redirect(w, r, oauthClient.AuthorizationURL(creds, nil), 302)
 		}
 	})
 	
 	// GET '/auth/twitter/callback
 	router.HandleFunc("/auth/twitter/callback", func(w http.ResponseWriter, r *http.Request) {
-		switch extendMethod(r) {
-			case "GET":
-				key, twitterAccount := prepareTwitterConnection(r)
-				twitterAccount.ServeOAuthCallback(w, r)
-				Update(&twitterAccount, key)
-				http.Redirect(w, r, "/manage/networks", 302)
+		if extendMethod(r) == "GET" {
+			key, twitterAccount := prepareTwitterConnection(r)
+			twitterAccount.ServeOAuthCallback(w, r)
+			Update(&twitterAccount, key)
+			http.Redirect(w, r, "/manage/networks", 302)
 		}
 	})
 	
 	// GET '/refresh'
 	router.HandleFunc("/refresh", func(w http.ResponseWriter, r *http.Request) {
-		switch extendMethod(r) {
-			case "GET":
-				CleanUp(100)
-				_, twitterAccount := prepareTwitterConnection(r)
-				twitterAccount.GetTwitterUpdates(w, r)
+		if extendMethod(r) == "GET" {
+			CleanUp(100)
+			_, twitterAccount := prepareTwitterConnection(r)
+			twitterAccount.GetTwitterUpdates(w, r)
 		}
 	})
 	
