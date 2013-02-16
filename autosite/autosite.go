@@ -121,6 +121,17 @@ func init() {
 		render(w, []string{"manage","pages"}, map[string]interface{}{"content": &pages})
 	})
 	
+	// GET '/sign_out'
+	router.HandleFunc("/sign_out", func(w http.ResponseWriter, r *http.Request) {
+		if extendMethod(r) == "GET" {
+			cookie, err := r.Cookie("ACSID")
+			if cookie != nil && err == nil {
+				w.Header().Set("Set-Cookie", "ACSID=deleted; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Domain=" + cookie.Domain + "; Path=" + cookie.Path)
+			}
+		}
+		http.Redirect(w, r, "/", 302)
+	})
+	
 	// GET '/auth/twitter'
 	router.HandleFunc("/auth/twitter", func(w http.ResponseWriter, r *http.Request) {
 		switch extendMethod(r) {
@@ -147,6 +158,7 @@ func init() {
 	router.HandleFunc("/refresh", func(w http.ResponseWriter, r *http.Request) {
 		switch extendMethod(r) {
 			case "GET":
+				CleanUp(100)
 				_, twitterAccount := prepareTwitterConnection(r)
 				twitterAccount.GetTwitterUpdates(w, r)
 		}

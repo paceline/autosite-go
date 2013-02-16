@@ -265,3 +265,11 @@ func Timeline(page int) []*Status {
 	q.GetAll(c, &timeline)
 	return timeline
 }
+
+func CleanUp(keep int) {
+	q := datastore.NewQuery("Status").Order("-Created").Offset(keep).KeysOnly()
+	keys, err := q.GetAll(c, nil)
+	if err == nil && len(keys) > 0 {
+		datastore.DeleteMulti(c, keys)
+	}
+}
