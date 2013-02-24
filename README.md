@@ -12,9 +12,9 @@ personal website (off of the Google App Engine)
 * More documentation
 
 ### Required libraries
-* Gorilla web toolkit ([mux](http://github.com/gorilla/mux), [schema](github.com/gorilla/schema), and [sessions](github.com/gorilla/sessions))
-* [go-oauth](github.com/garyburd/go-oauth/oauth)
-* [goauth2 (custom)](http://github.com/paceline/goauth2/oauth)
+* Gorilla web toolkit ([mux](http://github.com/gorilla/mux), [schema](http://github.com/gorilla/schema), and [sessions](http://github.com/gorilla/sessions))
+* [go-oauth](http://github.com/garyburd/go-oauth/)
+* [goauth2 (custom)](http://github.com/paceline/goauth2)
 
 ### Credits
 Created by Ulf Möhring <ulf@moehring.me>
