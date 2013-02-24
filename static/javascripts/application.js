@@ -14,17 +14,6 @@ $(window).ready(function(){
 		}
 	});
 	
-	// Do submenu highlighting
-	$("#submenu > a").each(function() {
-		var path = window.location.pathname.split("/");
-		if (path.length > 3) {
-			if ($(this).attr("href") == path.join("/")) {
-				$(this).addClass("selected");
-			}
-			$("#submenu > a:first").removeClass("selected");
-		}
-	});
-	
 	// Hide Notice after 5 seconds
 	if ($('#notice')){
 		setTimeout("$('#notice').hide()", 5000);

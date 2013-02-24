@@ -33,7 +33,7 @@ var oauthClient oauth.Client
 func (a *Account) ServeLogin(w http.ResponseWriter, r *http.Request) *oauth.Credentials {
 	tempCred, err := oauthClient.RequestTemporaryCredentials(urlfetch.Client(c), "http://" + r.Host + "/auth/" + a.Name + "/callback", nil)
 	if err != nil {
-		session.AddFlash("An error occured while preparing authorization: %s", err.Error())
+		session.AddFlash("An error occured while preparing authorization: " + err.Error())
 		return nil
 	}
 	a.Token = tempCred.Token
@@ -42,11 +42,11 @@ func (a *Account) ServeLogin(w http.ResponseWriter, r *http.Request) *oauth.Cred
 }
 
 // Authorize Callback
-func (a *Account) ServeOAuthCallback(w http.ResponseWriter, r *http.Request) {
+func (a *Account) ServeOAuthCallback(r *http.Request) {
 	tempCred := oauth.Credentials{Token: r.FormValue("oauth_token"), Secret: a.Secret}
 	tokenCred, _, err := oauthClient.RequestToken(urlfetch.Client(c), &tempCred, r.FormValue("oauth_verifier"))
 	if err != nil {
-		session.AddFlash("An error occured while preparing authorization: %s", err.Error())
+		session.AddFlash("An error occured while preparing authorization: " + err.Error())
 		return
 	}
 	a.Token = tokenCred.Token
@@ -73,33 +73,36 @@ func decodeResponse(resp *http.Response, data interface{}) error {
 	return json.NewDecoder(resp.Body).Decode(data)
 }
 
+// Return oauth creds
+func (a *Account) Creds() oauth.Credentials {
+	return oauth.Credentials{Token: a.Token, Secret: a.Secret}
+}
+
+// OAuth settings
+func (a * Account) prepareOAuthConnection(r *http.Request) {
+	oauthClient = oauth.Client{
+		TemporaryCredentialRequestURI: a.RequestUrl,
+		ResourceOwnerAuthorizationURI: a.AuthUrl,
+		TokenRequestURI:               a.AccessUrl,
+		Credentials: oauth.Credentials{Token: a.ConsumerKey, Secret: a.ConsumerSecret},
+	}
+}
+
 
 /*
  * Twitter Client
  */
  
-// Return OAuth settings for Twitter
-func prepareTwitterConnection(r *http.Request) (string, Account) {
-	var account Account
-	key := GetByName(&account, "twitter")
-	oauthClient = oauth.Client{
-		TemporaryCredentialRequestURI: "http://api.twitter.com/oauth/request_token",
-		ResourceOwnerAuthorizationURI: "http://api.twitter.com/oauth/authenticate",
-		TokenRequestURI:               "http://api.twitter.com/oauth/access_token",
-		Credentials: oauth.Credentials{Token: account.ConsumerKey, Secret: account.ConsumerSecret},
-	}
-	return key, account
-}
 
 // Get Updates from Twitter
-func (a *Account) GetTwitterUpdates(w http.ResponseWriter, r *http.Request) {
+func (a *Account) GetTwitterUpdates(r *http.Request) {
 	var timeline []map[string]interface{}
 	params := url.Values{}
 	if latest := Latest("twitter"); latest.OriginalId > 0 {
 		params.Add("since_id", strconv.FormatInt(latest.OriginalId, 10))
 	}
 	if err := a.apiGet("https://api.twitter.com/1.1/statuses/user_timeline.json", params, &timeline); err != nil {
-		http.Error(w, "Error getting timeline, "+err.Error(), 500)
+		session.AddFlash("Error getting timeline: %s", err.Error())
 		return
 	}
 	for i := 0; i < len(timeline); i++ {

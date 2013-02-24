@@ -10,10 +10,6 @@ handlers:
 - url: /manage.*
   script: _go_app
   login: admin
-  
-- url: /refresh
-  script: _go_app
-  login: admin
 
 - url: /.*
   script: _go_app

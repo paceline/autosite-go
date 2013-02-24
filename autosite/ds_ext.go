@@ -9,7 +9,6 @@ package autosite
 
 import (
 	"appengine/datastore"
-    "github.com/garyburd/go-oauth/oauth"
     "net/http"
     "regexp"
     "strings"
@@ -215,14 +214,60 @@ type Account struct {
 	ConsumerSecret string
 	Token string
 	Secret string
+	RequestUrl string
+	AuthUrl string
+	AccessUrl string
 }
 
 func (a *Account) Type() string {
 	return "Account"
 }
 
-func (a *Account) Creds() oauth.Credentials {
-	return oauth.Credentials{Token: a.Token, Secret: a.Secret}
+func (a *Account) Version() int {
+	if a.RequestUrl == "" {
+		return 2
+	}
+	return 1
+}
+
+func (a *Account) Twitter() bool {
+	return a.Name == "twitter"
+}
+
+func (a *Account) Facebook() bool {
+	return a.Name == "facebook"
+}
+
+func (a *Account) LinkedIn() bool {
+	return a.Name == "linkedin"
+}
+
+func (a *Account) GitHub() bool {
+	return a.Name == "github"
+}
+
+func Refresh(w http.ResponseWriter, r *http.Request) {
+	if extendMethod(r) == "GET" {
+		var account Account
+		q := datastore.NewQuery("Account")
+		for t := q.Run(c); ; {
+			_, err := t.Next(&account)
+			if err == datastore.Done {
+				break
+			}
+			if account.Token != "" {
+				switch account.Name {
+					case "github":
+						account.prepareOAuth2Connection(r, "user")
+						account.GetGithubUpdates(r)
+					case "twitter":
+						account.prepareOAuthConnection(r)
+						account.GetTwitterUpdates(r)
+				}
+			}
+		}
+		CleanUp(100)
+	}
 }
 
 

@@ -129,33 +129,53 @@ func init() {
 	})
 	
 	// GET '/auth/twitter'
-	router.HandleFunc("/auth/twitter", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/auth/{provider}", func(w http.ResponseWriter, r *http.Request) {
+		url := "/"
 		if extendMethod(r) == "GET" {
-			key, twitterAccount := prepareTwitterConnection(r)
-			creds := twitterAccount.ServeLogin(w, r)
-			Update(&twitterAccount, key)
-			http.Redirect(w, r, oauthClient.AuthorizationURL(creds, nil), 302)
+			var account Account
+			key := GetByName(&account, vars["provider"])
+			if key != "" {
+				if account.Version() == 1 {
+					account.prepareOAuthConnection(r)
+					creds := account.ServeLogin(w, r)
+					Update(&account, key)
+					url = oauthClient.AuthorizationURL(creds, nil)
+				} else {
+					switch account.Name {
+						case "github":
+							account.prepareOAuth2Connection(r, "user")
+					}
+					url = oauth2Config.AuthCodeURL("")
+				}
+			}
 		}
+		http.Redirect(w, r, url, 302)
 	})
 	
 	// GET '/auth/twitter/callback
-	router.HandleFunc("/auth/twitter/callback", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/auth/{provider}/callback", func(w http.ResponseWriter, r *http.Request) {
 		if extendMethod(r) == "GET" {
-			key, twitterAccount := prepareTwitterConnection(r)
-			twitterAccount.ServeOAuthCallback(w, r)
-			Update(&twitterAccount, key)
-			http.Redirect(w, r, "/manage/networks", 302)
+			var account Account
+			key := GetByName(&account, vars["provider"])
+			if key != "" {
+				if account.Version() == 1 {
+					account.prepareOAuthConnection(r)
+					account.ServeOAuthCallback(r)
+				} else {
+					switch account.Name {
+						case "github":
+							account.prepareOAuth2Connection(r, "user")
+					}
+					account.ServeOAuth2Callback(r)
+				}
+				Update(&account, key)
+				render(w, []string{"manage","networks"}, map[string]interface{}{"key": key, "content": &account})
+			}
 		}
 	})
 	
-	// GET '/refresh'
-	router.HandleFunc("/refresh", func(w http.ResponseWriter, r *http.Request) {
-		if extendMethod(r) == "GET" {
-			CleanUp(100)
-			_, twitterAccount := prepareTwitterConnection(r)
-			twitterAccount.GetTwitterUpdates(w, r)
-		}
-	})
+	// GET '/manage/refresh'
+	router.HandleFunc("/manage/refresh", Refresh)
 	
 	// GET '/'
 	router.HandleFunc("/", RootHandler)

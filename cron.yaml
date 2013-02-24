@@ -1,4 +1,4 @@
 cron:
 - description: timeline refresh job
-  url: /refresh
+  url: /manage/refresh
   schedule: every 5 minutes
