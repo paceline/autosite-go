@@ -65,14 +65,10 @@ func (a *Account) apiGet(urlStr string, form url.Values, data interface{}) error
 }
 
 // apiPost issues a POST request to the API and decodes the response JSON to data.
-func (a *Account) apiPost(urlStr string, form url.Values, data interface{}) error {
+func (a *Account) apiPost(urlStr string, form url.Values) error {
 	cred := a.Creds()
-	resp, err := oauthClient.Post(urlfetch.Client(c), &cred, urlStr, form)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	return decodeResponse(resp, data)
+	_, err := oauthClient.Post(urlfetch.Client(c), &cred, urlStr, form)
+	return err
 }
 
 // decodeResponse decodes the JSON response from the Twitter API.
@@ -141,7 +137,7 @@ func (a *Account) PostTwitterUpdate(posts []map[string]string) {
 			post["status"] = post["status"][0:115] + "..."  
 		}
 		params.Add("status", post["status"] + " " + post["link"])
-		if err := a.apiPost("https://api.twitter.com/1.1/statuses/update.json", params, nil); err != nil {
+		if err := a.apiPost("https://api.twitter.com/1.1/statuses/update.json", params); err != nil {
 			session.AddFlash("Error posting " + a.Name + " update: " + err.Error())
 		}
 	}
