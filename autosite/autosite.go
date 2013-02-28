@@ -16,11 +16,9 @@ import (
     "github.com/gorilla/mux"
     "github.com/gorilla/schema"
     "github.com/gorilla/sessions"
-    "log"
     "os"
     "strconv"
     "strings"
-    "time"
 )
 
 
@@ -252,9 +250,7 @@ func render(w http.ResponseWriter, url []string, pageData map[string]interface{}
 		"pagination": pagination,
 	}
     pageTemplate, _ := template.New("website").Funcs(funcMap).ParseFiles(layout, "templates/" + strings.Join(url,"/") + ".html")
-    if err := pageTemplate.Execute(w, pageData); err != nil {
-		log.Printf("Somethings wrong: %s", err.Error())
-	}	
+	pageTemplate.Execute(w, pageData)	
 }
 
 // Helper: Use _method form field to support PUT and DELETE requests just like the regular GET and POST (-> RESTful routes)
@@ -266,31 +262,6 @@ func extendMethod(r *http.Request) string {
 		return strings.ToUpper(r.FormValue("_method"))
 	}
 	return r.Method
-}
-
-// Helper: View wrapper for html safe
-func htmlSafe(text string) template.HTML {
-	return template.HTML(text)
-}
-
-// Helper: Return time in proper format
-func formatTime(t time.Time) string {
-	elapsed := time.Since(t).Seconds()
-	switch {
-		case elapsed < 60:
-			return "A few seconds ago"
-		case elapsed >= 60 && elapsed < 3600:
-			return "About " + strconv.FormatFloat(elapsed/60, 'f', 0, 64) + " minutes ago"
-		case elapsed >= 3600 && elapsed < 86400:
-			return "About " + strconv.FormatFloat(elapsed/60/60, 'f', 0, 64) + " hours ago"
-		case elapsed >= 86400 && elapsed < 604800:
-			return "About " + strconv.FormatFloat(elapsed/60/60/24, 'f', 0, 64) + " days ago"
-		case elapsed >= 604800 && elapsed < 2419200:
-			return "About " + strconv.FormatFloat(elapsed/60/60/24/7, 'f', 0, 64) + " weeks ago"
-		case elapsed >= 2419200 && elapsed < 29030400:
-			return "About " + strconv.FormatFloat(elapsed/60/60/24/7/4, 'f', 0, 64) + " months ago"
-	}
-	return "More than a year ago"
 }
 
 // Helper: Render navigation

@@ -1,0 +1,8 @@
+UPDATE LOG
+{{if $.notice}}
+{{range $.notice}}
+{{.}}
+{{end}}
+{{else}}
+Nothing to update...
+{{end}}

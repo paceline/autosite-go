@@ -1,13 +1,15 @@
 {{define "head"}}<title>Autosite admin area - Networks</title>{{end}}
 {{define "body"}}{{with $.content}}<a {{if .Twitter}}class="selected"{{end}} href="/manage/networks">Twitter</a>
-  <a {{if .Facebook}}class="selected"{{end}} href="/manage/networks/facebook">Facebook</a>
-  <a {{if .LinkedIn}}class="selected"{{end}} href="/manage/networks/linkedin">Linkedin</a>
-  <a {{if .GitHub}}class="selected"{{end}} href="/manage/networks/github">Github</a>
-  <div class="spacer">&nbsp;</div>
+	<a {{if .GitHub}}class="selected"{{end}} href="/manage/networks/github">Github</a>
+	<a {{if .LinkedIn}}class="selected"{{end}} href="/manage/networks/linkedin">LinkedIn</a>
+	<a {{if .XING}}class="selected"{{end}} href="/manage/networks/xing">XING</a>
+	<div class="spacer">&nbsp;</div>
 </div>
 <form accept-charset="UTF-8" action="/manage/networks/{{.Name}}" method="post">
 	{{with $.key}}<input name="_method" type="hidden" value="put" />
 	<input name="Key" type="hidden" value="{{.}}" />{{end}}
+	{{with .Secret}}<input name="Secret" type="hidden" value="{{.}}" />{{end}}
+	{{with .Token}}<input name="Token" type="hidden" value="{{.}}" />{{end}}
 	<table>
 		<tr>
 			<th>Consumer Key</th>
@@ -16,7 +18,7 @@
 				<p>The API token for your application</p>
 			</td>
 		</tr>
-		<tr class="last_row">
+		<tr>
 			<th>Consumer Secret</th>
 			<td>
 				<input id="consumer_secret" maxlength="255" name="ConsumerSecret" type="text" value="{{.ConsumerSecret}}" />
@@ -40,10 +42,16 @@
 		<tr>
 			<th>Access URL</th>
 			<td>
-				<input id="authorize_url" maxlength="255" name="AccessUrl" type="text" value="{{.AccessUrl}}" />
-				<p>The URL to retrieve your access credentials</p>
+				<input id="access_url" maxlength="255" name="AccessUrl" type="text" value="{{.AccessUrl}}" />
+				<p>The URL to access token</p>
 			</td>
 		</tr>
+		{{if .GitHub}}<tr>
+			<th>Repost</th>
+			<td>
+				<input {{if .Repost}}checked="checked"{{end}} id="repost" name="Repost" type="checkbox" value="1"> Post commits to Twitter
+			</td>
+		</tr>{{end}}
 		<tr class="last_row">
 			<th></th>
 			<td>

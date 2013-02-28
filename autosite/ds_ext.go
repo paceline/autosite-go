@@ -12,7 +12,8 @@ import (
     "net/http"
     "regexp"
     "strings"
-    "time"
+    "text/template"
+    "time" 
 )
 
 
@@ -30,7 +31,7 @@ func Get(m Model) string {
 	for t := q.Run(c); ; {
 		key, err := t.Next(m)
         if err != nil {
-			session.AddFlash("An error occured while loading: %s", err.Error())
+			session.AddFlash("An error occured while loading: " + err.Error())
 			break
         }
         return key.Encode()
@@ -41,7 +42,7 @@ func Get(m Model) string {
 // Generic get by function
 func GetByKey(m Model, key *datastore.Key) string {
 	if err := datastore.Get(c, key, m); err != nil {
-        session.AddFlash("An error occured while loading: %s", err.Error())
+        session.AddFlash("An error occured while loading: " + err.Error())
 		return ""
     }
 	return key.Encode()
@@ -53,7 +54,7 @@ func GetByName(m Model, name string) string {
 	for t := q.Run(c); ; {
 		key, err := t.Next(m)
         if err != nil {
-			session.AddFlash("An error occured while loading: %s", err.Error())
+			session.AddFlash("An error occured while loading: " + err.Error())
 			break
         }
         return key.Encode()
@@ -83,7 +84,7 @@ func Build(m Model, r *http.Request) {
 func Save(m Model) string {
 	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, m.Type(), nil), m)
 	if err != nil {
-		session.AddFlash("An error occured while saving: %s", err.Error())
+		session.AddFlash("An error occured while saving: " + err.Error())
 		return ""
     }
     session.AddFlash(m.Type() + " has been saved successfully")
@@ -94,7 +95,7 @@ func Save(m Model) string {
 func Update(m Model, k string) string {
 	key, err := datastore.Put(c, ToKey(k), m)
 	if err != nil {
-		session.AddFlash("An error occured while saving: %s", err.Error())
+		session.AddFlash("An error occured while saving: " + err.Error())
     }
     session.AddFlash(m.Type() + " has been saved successfully")
 	return key.Encode()
@@ -104,7 +105,7 @@ func Update(m Model, k string) string {
 func Delete(k string) {
 	err := datastore.Delete(c, ToKey(k))
 	if err != nil {
-		session.AddFlash("An error occured while deleting: %s", err.Error())
+		session.AddFlash("An error occured while deleting: " + err.Error())
     }
 }
 
@@ -117,7 +118,6 @@ type Site struct {
 	SiteTitle	string
 	HomepageTitle	string
 	Footer	string
-	WebRoot	string
 	TrackerCode	[]byte
 	TemplateKey	*datastore.Key
 }
@@ -217,6 +217,7 @@ type Account struct {
 	RequestUrl string
 	AuthUrl string
 	AccessUrl string
+	Repost bool
 }
 
 func (a *Account) Type() string {
@@ -234,8 +235,8 @@ func (a *Account) Twitter() bool {
 	return a.Name == "twitter"
 }
 
-func (a *Account) Facebook() bool {
-	return a.Name == "facebook"
+func (a *Account) XING() bool {
+	return a.Name == "xing"
 }
 
 func (a *Account) LinkedIn() bool {
@@ -266,8 +267,15 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		CleanUp(100)
+		q = datastore.NewQuery("Status").Order("-Created").Offset(100).KeysOnly()
+		keys, err := q.GetAll(c, nil)
+		if err == nil && len(keys) > 0 {
+			datastore.DeleteMulti(c, keys)
+		}
 	}
+	pageTemplate, _ := template.ParseFiles("templates/manage/refresh.txt")
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+    pageTemplate.Execute(w, map[string]interface{}{"notice": session.Flashes()})
 }
 
 
@@ -309,12 +317,4 @@ func Timeline(page int) []*Status {
 	var timeline []*Status
 	q.GetAll(c, &timeline)
 	return timeline
-}
-
-func CleanUp(keep int) {
-	q := datastore.NewQuery("Status").Order("-Created").Offset(keep).KeysOnly()
-	keys, err := q.GetAll(c, nil)
-	if err == nil && len(keys) > 0 {
-		datastore.DeleteMulti(c, keys)
-	}
 }
