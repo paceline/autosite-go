@@ -2,11 +2,11 @@
 	{{range $index, $element := $.timeline}}<div id="update_{{$index}}">
       {{with $element}}<h1>
 		  <a href="{{.UserUrl}}" class="user_link">{{.User}}</a>
-		  <a href="{{.Link}}">{{$element.Heading}}</a>
+		  {{if .Link}}<a href="{{.Link}}">{{end}}{{$element.Heading}}{{if .Link}}</a>{{end}}
       </h1>
-      {{with .Content}}<p>{{.}}</p>{{end}}
+      {{if .Content}}<p>{{if .Link}}<a href="{{.Link}}">{{end}}{{.Content}}{{if .Link}}</a>{{end}}</p>{{end}}
       <p class="link">
-		  {{formatTime .Created}} from <a href="http://{{.Name}}.com">{{.NameTitle}}</a>
+		  {{formatTime .Created}} on <a href="http://{{.Name}}.com">{{.NameTitle}}</a>
       </p>
     </div>{{end}}{{end}}
 </div>

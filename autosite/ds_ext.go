@@ -2,7 +2,7 @@
     Package autosite provides a simple infrastructure for running a
     personal website (off of the Google App Engine)
     
-    Created by Ulf Möhring <hello@ulfmoehring.net>
+    Created by Ulf Möhring <ulf@moehring.me>
 */
 
 package autosite
@@ -218,6 +218,7 @@ type Account struct {
 	AuthUrl string
 	AccessUrl string
 	Repost bool
+	Expires time.Time
 }
 
 func (a *Account) Type() string {
@@ -225,10 +226,15 @@ func (a *Account) Type() string {
 }
 
 func (a *Account) Version() int {
-	if a.RequestUrl == "" {
+	reqmatch, _ := regexp.Compile("^http")
+	if reqmatch.FindString(a.RequestUrl) == "" {
 		return 2
 	}
 	return 1
+}
+
+func (a *Account) Verified() bool {
+	return len(a.Token) > 0 && (a.Expires.IsZero() || time.Now().Before(a.Expires))
 }
 
 func (a *Account) Twitter() bool {
@@ -256,11 +262,14 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 			if err == datastore.Done {
 				break
 			}
-			if account.Token != "" {
+			if account.Verified() {
 				switch account.Name {
 					case "github":
-						account.prepareOAuth2Connection(r, "user")
+						account.prepareOAuth2Connection(r)
 						account.GetGithubUpdates(r)
+					case "linkedin":
+						account.prepareOAuth2Connection(r)
+						account.GetLinkedInUpdates(r)
 					case "twitter":
 						account.prepareOAuthConnection(r)
 						account.GetTwitterUpdates(r)

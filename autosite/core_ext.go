@@ -2,7 +2,7 @@
     Package autosite provides a simple infrastructure for running a
     personal website (off of the Google App Engine)
     
-    Created by Ulf Möhring <hello@ulfmoehring.net>
+    Created by Ulf Möhring <ulf@moehring.me>
 */
 
 package autosite

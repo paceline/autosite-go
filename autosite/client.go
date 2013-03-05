@@ -2,7 +2,7 @@
     Package autosite provides a simple infrastructure for running a
     personal website (off of the Google App Engine)
     
-    Created by Ulf Möhring <hello@ulfmoehring.net>
+    Created by Ulf Möhring <ulf@moehring.me>
 */
 
 package autosite
@@ -65,10 +65,14 @@ func (a *Account) apiGet(urlStr string, form url.Values, data interface{}) error
 }
 
 // apiPost issues a POST request to the API and decodes the response JSON to data.
-func (a *Account) apiPost(urlStr string, form url.Values) error {
+func (a *Account) apiPost(urlStr string, form url.Values) (string, error) {
 	cred := a.Creds()
-	_, err := oauthClient.Post(urlfetch.Client(c), &cred, urlStr, form)
-	return err
+	resp, err := oauthClient.Post(urlfetch.Client(c), &cred, urlStr, form)
+	if err != nil {
+		return "", err
+	}
+	msg, err := ioutil.ReadAll(resp.Body)
+	return string(msg), nil
 }
 
 // decodeResponse decodes the JSON response from the Twitter API.
@@ -131,14 +135,14 @@ func (a *Account) GetTwitterUpdates(r *http.Request) {
 // Post updates to Twitter
 func (a *Account) PostTwitterUpdate(posts []map[string]string) {
 	for i := 1; i <= len(posts); i++ {
-		params := url.Values{}
 		post := posts[len(posts) - i]
 		if len(post["status"]) > 119 {
 			post["status"] = post["status"][0:115] + "..."  
 		}
-		params.Add("status", post["status"] + " " + post["link"])
-		if err := a.apiPost("https://api.twitter.com/1.1/statuses/update.json", params); err != nil {
+		msg, err := a.apiPost("https://api.twitter.com/1.1/statuses/update.json", url.Values{"status": {post["status"] + " " + post["link"]}})
+		if err != nil {
 			session.AddFlash("Error posting " + a.Name + " update: " + err.Error())
 		}
+		session.AddFlash("Response posting " + a.Name + " update '" +  post["status"] + "': " + msg)
 	}
 }

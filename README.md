@@ -5,7 +5,7 @@ Package autosite provides a simple infrastructure for running a
 personal website (off of the Google App Engine)
 
 ### TODOs
-* Support more OAuth providers (planned are: LinkedIn, XING)
+* Support more OAuth providers (planned are: XING)
 * Add RSS/Atom feed
 * Validations
 * Move all datastore code to ds_ext.go

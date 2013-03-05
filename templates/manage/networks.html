@@ -8,8 +8,6 @@
 <form accept-charset="UTF-8" action="/manage/networks/{{.Name}}" method="post">
 	{{with $.key}}<input name="_method" type="hidden" value="put" />
 	<input name="Key" type="hidden" value="{{.}}" />{{end}}
-	{{with .Secret}}<input name="Secret" type="hidden" value="{{.}}" />{{end}}
-	{{with .Token}}<input name="Token" type="hidden" value="{{.}}" />{{end}}
 	<table>
 		<tr>
 			<th>Consumer Key</th>
@@ -26,10 +24,10 @@
 			</td>
 		</tr>
 		<tr>
-			<th>Request URL</th>
+			<th>Request URL / Scope</th>
 			<td>
 				<input id="request_url" maxlength="255" name="RequestUrl" type="text" value="{{.RequestUrl}}" />
-				<p>The URL to retrieve your temporary credentials (OAuth 1 only)</p>
+				<p>The URL to retrieve your temporary credentials (OAuth 1) or your requested permission scope (OAuth 2)</p>
 			</td>
 		</tr>
 		<tr>
@@ -46,17 +44,17 @@
 				<p>The URL to access token</p>
 			</td>
 		</tr>
-		{{if .GitHub}}<tr>
-			<th>Repost</th>
+		{{if not .Twitter}}<tr>
+			<th>Tweet</th>
 			<td>
-				<input {{if .Repost}}checked="checked"{{end}} id="repost" name="Repost" type="checkbox" value="1"> Post commits to Twitter
+				<input {{if .Repost}}checked="checked"{{end}} id="repost" name="Repost" type="checkbox" value="1"> Post {{if .GitHub}}commits{{else}}status updates{{end}} to Twitter
 			</td>
 		</tr>{{end}}
 		<tr class="last_row">
 			<th></th>
 			<td>
 				<input class="update" id="account_submit" name="commit" type="submit" value="Save changes" /> &nbsp;&nbsp;
-        <a href="/auth/{{.Name}}">{{if .Token}}Verified{{else}}Verify{{end}}</a>
+        <a href="/auth/{{.Name}}">{{if .Verified}}Verified{{else}}Verify{{end}}</a>
 			</td>
 		</tr>
 	</table>

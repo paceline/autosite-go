@@ -2,7 +2,7 @@
     Package autosite provides a simple infrastructure for running a
     personal website (off of the Google App Engine)
     
-    Created by Ulf Möhring <hello@ulfmoehring.net>
+    Created by Ulf Möhring <ulf@moehring.me>
 */
 
 package autosite
@@ -139,11 +139,11 @@ func init() {
 					Update(&account, key)
 					url = oauthClient.AuthorizationURL(creds, nil)
 				} else {
-					switch account.Name {
-						case "github":
-							account.prepareOAuth2Connection(r, "user")
-					}
+					account.prepareOAuth2Connection(r)
 					url = oauth2Config.AuthCodeURL("")
+					if account.Name == "linkedin" {
+						url = oauth2Config.AuthCodeURL("authentic-autosite-go-request")
+					}
 				}
 			}
 		}
@@ -160,10 +160,7 @@ func init() {
 					account.prepareOAuthConnection(r)
 					account.ServeOAuthCallback(r)
 				} else {
-					switch account.Name {
-						case "github":
-							account.prepareOAuth2Connection(r, "user")
-					}
+					account.prepareOAuth2Connection(r)
 					account.ServeOAuth2Callback(r)
 				}
 				Update(&account, key)
@@ -224,6 +221,9 @@ func NetworksHandler(w http.ResponseWriter, r *http.Request) {
 		switch extendMethod(r) {
 			case "GET":
 				key = GetByName(&account, account.Name)
+				if !account.Verified() {
+					session.AddFlash("Account is currently unverified (authorization expired or was never authorized). Click verify below to fix this.")
+				}
 			case "PUT":
 				Build(&account, r)
 				key = Update(&account, r.FormValue("Key"))

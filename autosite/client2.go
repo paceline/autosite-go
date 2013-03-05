@@ -2,7 +2,7 @@
     Package autosite provides a simple infrastructure for running a
     personal website (off of the Google App Engine)
     
-    Created by Ulf Möhring <hello@ulfmoehring.net>
+    Created by Ulf Möhring <ulf@moehring.me>
 */
 
 package autosite
@@ -33,17 +33,18 @@ func (a *Account) ServeOAuth2Callback(r *http.Request) {
 		return
 	}
 	a.Token = tokenCred.AccessToken
+	a.Expires = tokenCred.Expiry
 }
 
 // OAuth2 settings
-func (a *Account) prepareOAuth2Connection(r *http.Request, scope string) {
+func (a *Account) prepareOAuth2Connection(r *http.Request) {
 	oauth2Config = &oauth.Config {
 		ClientId: a.ConsumerKey,
         ClientSecret: a.ConsumerSecret,
         AuthURL: a.AuthUrl,
         TokenURL: a.AccessUrl,
         RedirectURL: "http://" + r.Host + "/auth/" + a.Name + "/callback",
-        Scope: scope,
+        Scope: a.RequestUrl,
 	}
 }
 
@@ -172,4 +173,71 @@ func (a *Account) GetGithubUpdates(r *http.Request) {
 			twitter.PostTwitterUpdate(tweets)
 		}
     }
+}
+
+
+/*
+ * LinkedIn Client
+ */
+ 
+
+// Get Updates from LinkedIn
+func (a *Account) GetLinkedInUpdates(r *http.Request) {
+	
+	// Initialize connection
+	var tweets []map[string]string
+	latest := Latest("linkedin")
+	url := "https://api.linkedin.com/v1/people/~/network/updates?format=json&scope=self&type=SHAR&oauth2_access_token=" + a.Token
+	if latest.OriginalId > 0 {
+		url = url + "&after=" + strconv.FormatInt(latest.OriginalId + 1, 10)
+	}
+	
+	// Fire request
+	resp, err := urlfetch.Client(c).Get(url)
+	if err != nil {
+		session.AddFlash("Error getting " + a.Name + " updates: " + err.Error())
+		return
+	}
+	defer resp.Body.Close()
+	var data map[string]interface{}
+	decodeResponse(resp, &data)
+	
+	// Parse and save timeline
+	if data["_total"] != nil && data["_total"].(float64) > 0 {
+		for i := 0; i < len(data["values"].([]interface{})); i++ {
+			content := data["values"].([]interface{})[i].(map[string]interface{})["updateContent"].(map[string]interface{})["person"].(map[string]interface{})
+			update := Status {
+				Name: "linkedin",
+				OriginalId: int64(content["currentShare"].(map[string]interface{})["timestamp"].(float64)),
+				Heading: "shared a link",
+				Created: time.Unix(int64(content["currentShare"].(map[string]interface{})["timestamp"].(float64)*0.001), 0),
+				User: content["currentShare"].(map[string]interface{})["author"].(map[string]interface{})["firstName"].(string) + " " + content["currentShare"].(map[string]interface{})["author"].(map[string]interface{})["lastName"].(string),
+				UserUrl: strings.Split(content["siteStandardProfileRequest"].(map[string]interface{})["url"].(string), "&")[0],
+			}
+			if content["currentShare"].(map[string]interface{})["comment"] != nil {
+				update.Heading = content["currentShare"].(map[string]interface{})["comment"].(string)
+			}
+			if content["currentShare"].(map[string]interface{})["content"] != nil {
+				update.Link = content["currentShare"].(map[string]interface{})["content"].(map[string]interface{})["submittedUrl"].(string)
+				update.Content = content["currentShare"].(map[string]interface{})["content"].(map[string]interface{})["submittedUrl"].(string)
+			}
+			if a.Repost {
+				status := update.Heading
+				if status == "shared a link" {
+					status = "I " + status
+				}
+				link := update.Link
+				if len(link) == 0 {
+					link = update.UserUrl
+				}
+				tweets = append(tweets, map[string]string{"status": status, "link": link})
+			}
+			Save(&update)
+		}
+		if a.Repost {
+			var twitter Account
+			GetByName(&twitter, "twitter")
+			twitter.PostTwitterUpdate(tweets)
+		}
+	}
 }
