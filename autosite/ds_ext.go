@@ -263,16 +263,18 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			if account.Verified() {
+				if account.Version() == 2 {
+					account.prepareOAuth2Connection(r)
+				}
 				switch account.Name {
 					case "github":
-						account.prepareOAuth2Connection(r)
 						account.GetGithubUpdates(r)
 					case "linkedin":
-						account.prepareOAuth2Connection(r)
 						account.GetLinkedInUpdates(r)
 					case "twitter":
-						account.prepareOAuthConnection(r)
 						account.GetTwitterUpdates(r)
+					case "xing":
+						account.GetXingUpdates(r)
 				}
 			}
 		}

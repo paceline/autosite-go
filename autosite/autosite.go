@@ -134,7 +134,7 @@ func init() {
 			key := GetByName(&account, vars["provider"])
 			if key != "" {
 				if account.Version() == 1 {
-					account.prepareOAuthConnection(r)
+					account.prepareOAuthConnection()
 					creds := account.ServeLogin(w, r)
 					Update(&account, key)
 					url = oauthClient.AuthorizationURL(creds, nil)
@@ -157,7 +157,7 @@ func init() {
 			key := GetByName(&account, vars["provider"])
 			if key != "" {
 				if account.Version() == 1 {
-					account.prepareOAuthConnection(r)
+					account.prepareOAuthConnection()
 					account.ServeOAuthCallback(r)
 				} else {
 					account.prepareOAuth2Connection(r)
