@@ -117,12 +117,16 @@ func (a *Account) GetTwitterUpdates(r *http.Request) {
 		if srcmatch.FindString(timeline[i]["source"].(string)) == "" {
 			created_at, _ := time.Parse("Mon Jan 2 15:04:05 -0700 2006", timeline[i]["created_at"].(string))
 			urlextractor, _ := regexp.Compile(" http://[a-zA-Z0-9\\./-]*")
-			link := strings.TrimLeft(urlextractor.FindString(timeline[i]["text"].(string)), " ")
-			post := urlextractor.ReplaceAllString(timeline[i]["text"].(string),"")
 			id, _ := strconv.ParseInt(timeline[i]["id_str"].(string), 10, 64)
-			profileName := timeline[i]["user"].(map[string]interface {})["screen_name"].(string)
-			profileUrl := "https://twitter.com/" + profileName
-			update := Status{Name: "twitter", OriginalId: id, Heading: post, Link: link, Created: created_at, User: profileName, UserUrl: profileUrl}
+			update := Status {
+				Name: "twitter",
+				OriginalId: id,
+				Heading: urlextractor.ReplaceAllString(timeline[i]["text"].(string),""),
+				Link: strings.TrimLeft(urlextractor.FindString(timeline[i]["text"].(string)), " "),
+				Created: created_at,
+				User: timeline[i]["user"].(map[string]interface {})["screen_name"].(string), 
+				UserUrl: "https://twitter.com/" + timeline[i]["user"].(map[string]interface {})["screen_name"].(string),
+			}
 			Save(&update)
 		}
     }

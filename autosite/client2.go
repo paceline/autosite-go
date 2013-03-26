@@ -130,8 +130,9 @@ func (a *Account) GetGithubUpdates(r *http.Request) {
 						title = timeline[i]["payload"].(map[string]interface {})["action"].(string) + "d " + timeline[i]["payload"].(map[string]interface {})["gist"].(map[string]interface {})["description"].(string)
 						link = timeline[i]["payload"].(map[string]interface {})["gist"].(map[string]interface {})["html_url"].(string)
 					case "GollumEvent":
-						title = "updated pages"
-						text = strings.Join(timeline[i]["payload"].(map[string]interface {})["pages"].([]string), ", ")
+						title = timeline[i]["payload"].(map[string]interface {})["pages"].([]interface {})[0].(map[string]interface {})["action"].(string) + " page"
+						text = timeline[i]["payload"].(map[string]interface {})["pages"].([]interface {})[0].(map[string]interface {})["page_name"].(string)
+						link = timeline[i]["payload"].(map[string]interface {})["pages"].([]interface {})[0].(map[string]interface {})["html_url"].(string)
 					case "IssueCommentEvent":
 						title = timeline[i]["payload"].(map[string]interface {})["action"].(string) + " on issue #" +  timeline[i]["payload"].(map[string]interface {})["issue"].(map[string]interface {})["number"].(string)
 						text = timeline[i]["payload"].(map[string]interface {})["comment"].(map[string]interface {})["body"].(string)
