@@ -240,7 +240,7 @@ func render(w http.ResponseWriter, url []string, pageData map[string]interface{}
 		pageData["notice"] = flashes
     }
     layout := "templates/" + url[0] + "/base.html"
-    if _, err := os.Stat("templates/" + url[0]); os.IsNotExist(err) {
+    if fi, _ := os.Stat("templates/" + url[0]); fi == nil {
 		layout = "templates/base.html"
     }
     funcMap := template.FuncMap {
