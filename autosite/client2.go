@@ -26,7 +26,7 @@ var oauth2Config *oauth.Config
 // Authorize Callback
 func (a *Account) ServeOAuth2Callback(r *http.Request) {
 	code := r.FormValue("code")
-	t := oauth.Transport{oauth.Config: oauth2Config, Transport: &urlfetch.Transport{Context: c}}
+	t := oauth.Transport{Config: oauth2Config, Transport: &urlfetch.Transport{Context: c}}
 	tokenCred, err := t.Exchange(code)
 	if err != nil {
 		session.AddFlash("Error during " + a.Name + " authentication: " + err.Error())
@@ -59,7 +59,7 @@ func (a *Account) GetGithubUpdates(r *http.Request) {
 	
 	// Initialize connection
 	var tweets []map[string]string
-	t := oauth.Transport{oauth.Config: oauth2Config, oauth.Token: &oauth.Token{AccessToken: a.Token}, Transport: &urlfetch.Transport{Context: c}}
+	t := oauth.Transport{Config: oauth2Config, Token: &oauth.Token{AccessToken: a.Token}, Transport: &urlfetch.Transport{Context: c}}
 	latest := Latest("github")
 	login := latest.User
 	
